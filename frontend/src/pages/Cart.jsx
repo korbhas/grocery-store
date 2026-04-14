@@ -38,6 +38,7 @@ export default function Cart() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
         <div>
           {items.map((item, idx) => {
+            // eslint-disable-next-line react-hooks/static-components
             const Illustration = getIllustrationForCategory(item.category_slug);
             const tint = getTintForCategory(item.category_slug);
             return (

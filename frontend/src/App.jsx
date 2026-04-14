@@ -75,7 +75,24 @@ function AppContent() {
           </Routes>
         </main>
       </BrowserRouter>
-      <Toaster position="bottom-right" />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#ffffff',
+            color: '#1f2a24',
+            border: '1px solid #e8e2d6',
+            borderRadius: '6px',
+            fontFamily: 'Inter, system-ui, sans-serif',
+            fontSize: '14px',
+            padding: '12px 16px',
+            boxShadow: '0 10px 30px rgba(30,40,35,0.06)',
+          },
+          success: { iconTheme: { primary: '#3d5a47', secondary: '#ffffff' } },
+          error: { iconTheme: { primary: '#b8654a', secondary: '#ffffff' } },
+        }}
+      />
     </CartProvider>
   );
 }

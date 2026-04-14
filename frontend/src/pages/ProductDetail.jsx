@@ -46,6 +46,7 @@ export default function ProductDetail() {
     );
   }
 
+  // eslint-disable-next-line react-hooks/static-components
   const Illustration = getIllustrationForCategory(product.category_slug);
   const tint = getTintForCategory(product.category_slug);
   const blurb = CATEGORY_BLURBS[(product.category_slug || '').toLowerCase()] ||

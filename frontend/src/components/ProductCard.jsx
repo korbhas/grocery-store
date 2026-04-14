@@ -5,6 +5,7 @@ import EyebrowLabel from './ui/EyebrowLabel';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  // eslint-disable-next-line react-hooks/static-components
   const Illustration = getIllustrationForCategory(product.category_slug);
   const tint = getTintForCategory(product.category_slug);
   const inStock = product.stock_qty > 0;
