@@ -30,7 +30,7 @@ function useAppUser() {
 
 function ProtectedRoute({ children, allowedRoles }) {
   const { dbUser } = useAppUser();
-  if (!dbUser) return <div className="loading">Loading...</div>;
+  if (!dbUser) return <div className="flex items-center justify-center py-24 text-ink-muted font-sans">Loading…</div>;
   if (allowedRoles && !allowedRoles.includes(dbUser.role)) {
     return <Navigate to="/" />;
   }
