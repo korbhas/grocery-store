@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
+import Button from '../components/ui/Button';
+import Modal from '../components/ui/Modal';
+import Input from '../components/ui/Input';
+import Textarea from '../components/ui/Textarea';
+import Select from '../components/ui/Select';
+import EyebrowLabel from '../components/ui/EyebrowLabel';
 
 const emptyProduct = { name: '', description: '', category_id: '', price: '', unit: 'piece', stock_qty: '', image_url: '' };
 
@@ -22,7 +28,12 @@ export default function AdminProducts() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = { ...form, price: parseFloat(form.price), stock_qty: parseInt(form.stock_qty) || 0, category_id: form.category_id || null };
+      const payload = {
+        ...form,
+        price: parseFloat(form.price),
+        stock_qty: parseInt(form.stock_qty) || 0,
+        category_id: form.category_id || null,
+      };
       if (editing) {
         await api.put(`/admin/products/${editing}`, payload);
         toast.success('Product updated');
@@ -62,91 +73,109 @@ export default function AdminProducts() {
 
   return (
     <div>
-      <div className="section-header">
-        <h2>Products</h2>
-        <button className="btn btn-primary" onClick={() => { setForm(emptyProduct); setEditing(null); setShowForm(true); }}>
-          <Plus size={16} /> Add Product
-        </button>
+      <div className="flex items-center justify-between mb-6 flex-col sm:flex-row gap-3">
+        <h2 className="font-serif text-2xl text-ink">Products</h2>
+        <Button
+          variant="ghost"
+          onClick={() => { setForm(emptyProduct); setEditing(null); setShowForm(true); }}
+        >
+          <Plus size={16} /> New product
+        </Button>
       </div>
 
-      {showForm && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3>{editing ? 'Edit Product' : 'New Product'}</h3>
-              <button className="btn-icon" onClick={() => setShowForm(false)}><X size={18} /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="product-form">
-              <div className="form-group">
-                <label>Name *</label>
-                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-              </div>
-              <div className="form-group">
-                <label>Description</label>
-                <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Category</label>
-                  <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })}>
-                    <option value="">None</option>
-                    {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Price *</label>
-                  <input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Unit</label>
-                  <input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} />
-                </div>
-                <div className="form-group">
-                  <label>Stock Qty</label>
-                  <input type="number" value={form.stock_qty} onChange={(e) => setForm({ ...form, stock_qty: e.target.value })} />
-                </div>
-              </div>
-              <div className="form-group">
-                <label>Image URL</label>
-                <input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
-              </div>
-              <button type="submit" className="btn btn-primary full-width">{editing ? 'Update' : 'Create'} Product</button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Active</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p) => (
-            <tr key={p.id} className={!p.is_active ? 'inactive-row' : ''}>
-              <td>{p.id}</td>
-              <td>{p.name}</td>
-              <td>{p.category_name || '-'}</td>
-              <td>₹{p.price}</td>
-              <td>{p.stock_qty}</td>
-              <td>{p.is_active ? 'Yes' : 'No'}</td>
-              <td>
-                <button className="btn-icon" onClick={() => handleEdit(p)}><Edit size={14} /></button>
-                <button className="btn-icon danger" onClick={() => handleDelete(p.id)}><Trash2 size={14} /></button>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[15px] bg-surface border border-hairline rounded-md">
+          <thead>
+            <tr className="border-b border-hairline">
+              <th className="py-3 px-4 text-left eyebrow">ID</th>
+              <th className="py-3 px-4 text-left eyebrow">Name</th>
+              <th className="py-3 px-4 text-left eyebrow">Category</th>
+              <th className="py-3 px-4 text-right eyebrow">Price</th>
+              <th className="py-3 px-4 text-right eyebrow">Stock</th>
+              <th className="py-3 px-4 text-left eyebrow">Active</th>
+              <th className="py-3 px-4 text-right eyebrow">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <tr
+                key={p.id}
+                className={`border-b border-hairline last:border-b-0 ${p.is_active ? '' : 'opacity-50'}`}
+              >
+                <td className="py-3 px-4 text-ink-muted">{p.id}</td>
+                <td className="py-3 px-4 font-serif">{p.name}</td>
+                <td className="py-3 px-4 text-ink-muted">{p.category_name || '—'}</td>
+                <td className="py-3 px-4 text-right">₹{p.price}</td>
+                <td className="py-3 px-4 text-right">{p.stock_qty}</td>
+                <td className="py-3 px-4 text-ink-muted">{p.is_active ? 'Yes' : 'No'}</td>
+                <td className="py-3 px-4 text-right whitespace-nowrap">
+                  <button
+                    onClick={() => handleEdit(p)}
+                    className="p-2 text-ink-muted hover:text-ink transition-colors"
+                    aria-label="Edit"
+                  >
+                    <Edit size={14} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    className="p-2 text-ink-muted hover:text-danger transition-colors"
+                    aria-label="Delete"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <Modal
+        open={showForm}
+        onClose={() => setShowForm(false)}
+        title={editing ? 'Edit product' : 'New product'}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <label className="flex flex-col gap-1.5">
+            <EyebrowLabel>Name *</EyebrowLabel>
+            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <EyebrowLabel>Description</EyebrowLabel>
+            <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="flex flex-col gap-1.5">
+              <EyebrowLabel>Category</EyebrowLabel>
+              <Select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })}>
+                <option value="">None</option>
+                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </Select>
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <EyebrowLabel>Price *</EyebrowLabel>
+              <Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
+            </label>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="flex flex-col gap-1.5">
+              <EyebrowLabel>Unit</EyebrowLabel>
+              <Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <EyebrowLabel>Stock qty</EyebrowLabel>
+              <Input type="number" value={form.stock_qty} onChange={(e) => setForm({ ...form, stock_qty: e.target.value })} />
+            </label>
+          </div>
+          <label className="flex flex-col gap-1.5">
+            <EyebrowLabel>Image URL</EyebrowLabel>
+            <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
+          </label>
+          <Button type="submit" fullWidth className="mt-2">
+            {editing ? 'Update product' : 'Create product'}
+          </Button>
+        </form>
+      </Modal>
     </div>
   );
 }
