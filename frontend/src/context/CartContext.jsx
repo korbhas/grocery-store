@@ -59,6 +59,8 @@ export function CartProvider({ children }) {
           unit: product.unit,
           image_url: product.image_url,
           stock_qty: product.stock_qty,
+          category_slug: product.category_slug,
+          category_name: product.category_name,
           quantity,
         },
       ];
