@@ -1,0 +1,296 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: FreshMart
+      - link "Home" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+      - link "Search" [ref=e12] [cursor=pointer]:
+        - /url: /
+        - img [ref=e13]
+      - link "Favorites" [ref=e16] [cursor=pointer]:
+        - /url: /
+        - img [ref=e17]
+      - link "Orders" [ref=e19] [cursor=pointer]:
+        - /url: /orders
+        - img [ref=e20]
+      - link "Offers" [ref=e23] [cursor=pointer]:
+        - /url: /
+        - img [ref=e24]
+      - link "Settings" [ref=e27] [cursor=pointer]:
+        - /url: /
+        - img [ref=e28]
+      - generic [ref=e31]: U
+      - button "Collapse sidebar" [ref=e32] [cursor=pointer]:
+        - img [ref=e33]
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - img [ref=e38]
+          - textbox "Search groceries, brands…" [ref=e41]
+          - generic [ref=e42]: ⌘K
+        - generic [ref=e43]:
+          - img [ref=e44]
+          - text: Delivering to you
+        - link "Orders" [ref=e47] [cursor=pointer]:
+          - /url: /orders
+          - img [ref=e48]
+          - text: Orders
+        - link "Cart" [ref=e51] [cursor=pointer]:
+          - /url: /cart
+          - img [ref=e52]
+          - text: Cart
+      - main [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: Browse by Category
+          - generic [ref=e59]:
+            - button "All" [ref=e60] [cursor=pointer]
+            - button "Bakery" [ref=e61] [cursor=pointer]
+            - button "Dairy & Eggs" [ref=e62] [cursor=pointer]
+            - button "Fruits & Vegetables" [ref=e63] [cursor=pointer]
+            - button "Grains & Staples" [ref=e64] [cursor=pointer]
+            - button "Snacks & Beverages" [ref=e65] [cursor=pointer]
+            - button "Spices & Condiments" [ref=e66] [cursor=pointer]
+        - generic [ref=e67]:
+          - generic [ref=e68]: All Products
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - link "Apple" [ref=e71] [cursor=pointer]:
+                - /url: /product/64
+                - img "Apple" [ref=e72]
+              - generic [ref=e73]:
+                - link "Fruits & Vegetables Apple" [ref=e74] [cursor=pointer]:
+                  - /url: /product/64
+                  - paragraph [ref=e75]: Fruits & Vegetables
+                  - heading "Apple" [level=3] [ref=e76]
+                - generic [ref=e77]:
+                  - generic [ref=e78]:
+                    - generic [ref=e79]: ₹150.00
+                    - text: kg
+                  - button "ADD" [ref=e81] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e82]:
+              - link "Banana" [ref=e83] [cursor=pointer]:
+                - /url: /product/61
+                - img "Banana" [ref=e84]
+              - generic [ref=e85]:
+                - link "Fruits & Vegetables Banana" [ref=e86] [cursor=pointer]:
+                  - /url: /product/61
+                  - paragraph [ref=e87]: Fruits & Vegetables
+                  - heading "Banana" [level=3] [ref=e88]
+                - generic [ref=e89]:
+                  - generic [ref=e90]:
+                    - generic [ref=e91]: ₹40.00
+                    - text: dozen
+                  - button "ADD" [ref=e93] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e94]:
+              - link "Bread" [ref=e95] [cursor=pointer]:
+                - /url: /product/75
+                - img "Bread" [ref=e96]
+              - generic [ref=e97]:
+                - link "Bakery Bread" [ref=e98] [cursor=pointer]:
+                  - /url: /product/75
+                  - paragraph [ref=e99]: Bakery
+                  - heading "Bread" [level=3] [ref=e100]
+                - generic [ref=e101]:
+                  - generic [ref=e102]:
+                    - generic [ref=e103]: ₹45.00
+                    - text: loaf
+                  - button "ADD" [ref=e105] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e106]:
+              - link "Chips (Large)" [ref=e107] [cursor=pointer]:
+                - /url: /product/71
+                - img "Chips (Large)" [ref=e108]
+              - generic [ref=e109]:
+                - link "Snacks & Beverages Chips (Large)" [ref=e110] [cursor=pointer]:
+                  - /url: /product/71
+                  - paragraph [ref=e111]: Snacks & Beverages
+                  - heading "Chips (Large)" [level=3] [ref=e112]
+                - generic [ref=e113]:
+                  - generic [ref=e114]:
+                    - generic [ref=e115]: ₹50.00
+                    - text: pack
+                  - button "ADD" [ref=e117] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e118]:
+              - link "Cola (2L)" [ref=e119] [cursor=pointer]:
+                - /url: /product/72
+                - img "Cola (2L)" [ref=e120]
+              - generic [ref=e121]:
+                - link "Snacks & Beverages Cola (2L)" [ref=e122] [cursor=pointer]:
+                  - /url: /product/72
+                  - paragraph [ref=e123]: Snacks & Beverages
+                  - heading "Cola (2L)" [level=3] [ref=e124]
+                - generic [ref=e125]:
+                  - generic [ref=e126]:
+                    - generic [ref=e127]: ₹90.00
+                    - text: bottle
+                  - button "ADD" [ref=e129] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e130]:
+              - link "Eggs (6 pack)" [ref=e131] [cursor=pointer]:
+                - /url: /product/66
+                - img "Eggs (6 pack)" [ref=e132]
+              - generic [ref=e133]:
+                - link "Dairy & Eggs Eggs (6 pack)" [ref=e134] [cursor=pointer]:
+                  - /url: /product/66
+                  - paragraph [ref=e135]: Dairy & Eggs
+                  - heading "Eggs (6 pack)" [level=3] [ref=e136]
+                - generic [ref=e137]:
+                  - generic [ref=e138]:
+                    - generic [ref=e139]: ₹50.00
+                    - text: pack
+                  - button "ADD" [ref=e141] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e142]:
+              - link "Milk (500ml)" [ref=e143] [cursor=pointer]:
+                - /url: /product/65
+                - img "Milk (500ml)" [ref=e144]
+              - generic [ref=e145]:
+                - link "Dairy & Eggs Milk (500ml)" [ref=e146] [cursor=pointer]:
+                  - /url: /product/65
+                  - paragraph [ref=e147]: Dairy & Eggs
+                  - heading "Milk (500ml)" [level=3] [ref=e148]
+                - generic [ref=e149]:
+                  - generic [ref=e150]:
+                    - generic [ref=e151]: ₹30.00
+                    - text: packet
+                  - button "ADD" [ref=e153] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e154]:
+              - link "Onion" [ref=e155] [cursor=pointer]:
+                - /url: /product/63
+                - img "Onion" [ref=e156]
+              - generic [ref=e157]:
+                - link "Fruits & Vegetables Onion" [ref=e158] [cursor=pointer]:
+                  - /url: /product/63
+                  - paragraph [ref=e159]: Fruits & Vegetables
+                  - heading "Onion" [level=3] [ref=e160]
+                - generic [ref=e161]:
+                  - generic [ref=e162]:
+                    - generic [ref=e163]: ₹35.00
+                    - text: kg
+                  - button "ADD" [ref=e165] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e166]:
+              - link "Paneer (200g)" [ref=e167] [cursor=pointer]:
+                - /url: /product/67
+                - img "Paneer (200g)" [ref=e168]
+              - generic [ref=e169]:
+                - link "Dairy & Eggs Paneer (200g)" [ref=e170] [cursor=pointer]:
+                  - /url: /product/67
+                  - paragraph [ref=e171]: Dairy & Eggs
+                  - heading "Paneer (200g)" [level=3] [ref=e172]
+                - generic [ref=e173]:
+                  - generic [ref=e174]:
+                    - generic [ref=e175]: ₹80.00
+                    - text: pack
+                  - button "ADD" [ref=e177] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e178]:
+              - link "Red Chili Powder" [ref=e179] [cursor=pointer]:
+                - /url: /product/74
+                - img "Red Chili Powder" [ref=e180]
+              - generic [ref=e181]:
+                - link "Spices & Condiments Red Chili Powder" [ref=e182] [cursor=pointer]:
+                  - /url: /product/74
+                  - paragraph [ref=e183]: Spices & Condiments
+                  - heading "Red Chili Powder" [level=3] [ref=e184]
+                - generic [ref=e185]:
+                  - generic [ref=e186]:
+                    - generic [ref=e187]: ₹70.00
+                    - text: 200g
+                  - button "ADD" [ref=e189] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e190]:
+              - link "Rice (5kg)" [ref=e191] [cursor=pointer]:
+                - /url: /product/68
+                - img "Rice (5kg)" [ref=e192]
+              - generic [ref=e193]:
+                - link "Grains & Staples Rice (5kg)" [ref=e194] [cursor=pointer]:
+                  - /url: /product/68
+                  - paragraph [ref=e195]: Grains & Staples
+                  - heading "Rice (5kg)" [level=3] [ref=e196]
+                - generic [ref=e197]:
+                  - generic [ref=e198]:
+                    - generic [ref=e199]: ₹350.00
+                    - text: bag
+                  - button "ADD" [ref=e201] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e202]:
+              - link "Tomato" [ref=e203] [cursor=pointer]:
+                - /url: /product/62
+                - img "Tomato" [ref=e204]
+              - generic [ref=e205]:
+                - link "Fruits & Vegetables Tomato" [ref=e206] [cursor=pointer]:
+                  - /url: /product/62
+                  - paragraph [ref=e207]: Fruits & Vegetables
+                  - heading "Tomato" [level=3] [ref=e208]
+                - generic [ref=e209]:
+                  - generic [ref=e210]:
+                    - generic [ref=e211]: ₹30.00
+                    - text: kg
+                  - button "ADD" [ref=e213] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e214]:
+              - link "Toor Dal (1kg)" [ref=e215] [cursor=pointer]:
+                - /url: /product/70
+                - img "Toor Dal (1kg)" [ref=e216]
+              - generic [ref=e217]:
+                - link "Grains & Staples Toor Dal (1kg)" [ref=e218] [cursor=pointer]:
+                  - /url: /product/70
+                  - paragraph [ref=e219]: Grains & Staples
+                  - heading "Toor Dal (1kg)" [level=3] [ref=e220]
+                - generic [ref=e221]:
+                  - generic [ref=e222]:
+                    - generic [ref=e223]: ₹140.00
+                    - text: bag
+                  - button "ADD" [ref=e225] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e226]:
+              - link "Turmeric Powder" [ref=e227] [cursor=pointer]:
+                - /url: /product/73
+                - img "Turmeric Powder" [ref=e228]
+              - generic [ref=e229]:
+                - link "Spices & Condiments Turmeric Powder" [ref=e230] [cursor=pointer]:
+                  - /url: /product/73
+                  - paragraph [ref=e231]: Spices & Condiments
+                  - heading "Turmeric Powder" [level=3] [ref=e232]
+                - generic [ref=e233]:
+                  - generic [ref=e234]:
+                    - generic [ref=e235]: ₹60.00
+                    - text: 200g
+                  - button "ADD" [ref=e237] [cursor=pointer]:
+                    - img
+                    - text: ADD
+            - generic [ref=e238]:
+              - link "Wheat Flour (5kg)" [ref=e239] [cursor=pointer]:
+                - /url: /product/69
+                - img "Wheat Flour (5kg)" [ref=e240]
+              - generic [ref=e241]:
+                - link "Grains & Staples Wheat Flour (5kg)" [ref=e242] [cursor=pointer]:
+                  - /url: /product/69
+                  - paragraph [ref=e243]: Grains & Staples
+                  - heading "Wheat Flour (5kg)" [level=3] [ref=e244]
+                - generic [ref=e245]:
+                  - generic [ref=e246]:
+                    - generic [ref=e247]: ₹250.00
+                    - text: bag
+                  - button "ADD" [ref=e249] [cursor=pointer]:
+                    - img
+                    - text: ADD

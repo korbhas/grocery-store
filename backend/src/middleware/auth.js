@@ -1,37 +1,63 @@
-const { clerkMiddleware, requireAuth, getAuth } = require('@clerk/express');
 const db = require('../db/db');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-// Sync Clerk user to our DB and attach db user to req
-async function syncUser(req, res, next) {
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
+const JWT_EXPIRES_IN = '7d';
+
+function hashPassword(password) {
+  return bcrypt.hash(password, 10);
+}
+
+function comparePassword(password, hash) {
+  return bcrypt.compare(password, hash);
+}
+
+function generateToken(user) {
+  return jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN }
+  );
+}
+
+async function requireAuth(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  const token = header.split(' ')[1];
   try {
-    const auth = getAuth(req);
-    if (!auth || !auth.userId) {
-      return next();
-    }
-
-    let user = await db('users').where({ clerk_id: auth.userId }).first();
-
-    if (!user) {
-      // Create user on first login
-      [user] = await db('users')
-        .insert({
-          clerk_id: auth.userId,
-          name: auth.sessionClaims?.name || '',
-          email: auth.sessionClaims?.email || '',
-          phone: auth.sessionClaims?.phone || '',
-          role: 'customer',
-        })
-        .returning('*');
-    }
-
-    req.dbUser = user;
+    const payload = jwt.verify(token, JWT_SECRET);
+const user = await db('users').where({ id: payload.id }).first();
+  if (!user) return res.status(401).json({ error: 'User not found' });
+  if (user.is_banned) return res.status(403).json({ error: 'Account has been suspended' });
+  req.userId = user.id;
+  req.dbUser = user;
     next();
-  } catch (err) {
-    next(err);
+  } catch {
+    return res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
 
-// Require a specific role
+async function attachUser(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith('Bearer ')) {
+    return next();
+  }
+
+  const token = header.split(' ')[1];
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    const user = await db('users').where({ id: payload.id }).first();
+    if (user) req.dbUser = user;
+  } catch {
+    // invalid token, just continue without user
+  }
+  next();
+}
+
 function requireRole(...roles) {
   return (req, res, next) => {
     if (!req.dbUser) {
@@ -44,4 +70,4 @@ function requireRole(...roles) {
   };
 }
 
-module.exports = { syncUser, requireRole, clerkMiddleware, requireAuth };
+module.exports = { hashPassword, comparePassword, generateToken, requireAuth, attachUser, requireRole };

@@ -1,12 +1,13 @@
 const router = require('express').Router();
-const { requireAuth, syncUser, requireRole } = require('../middleware/auth');
+const { requireAuth, attachUser, requireRole } = require('../middleware/auth');
 const ctrl = require('../controllers/orderController');
 
-router.use(requireAuth(), syncUser, requireRole('customer'));
-
-router.post('/', ctrl.createOrder);
+router.post('/', attachUser, ctrl.createOrder);
 router.post('/verify-payment', ctrl.verifyPayment);
-router.get('/', ctrl.getOrders);
 router.get('/:id', ctrl.getOrder);
+
+router.use(requireAuth, attachUser, requireRole('customer'));
+
+router.get('/', ctrl.getOrders);
 
 module.exports = router;

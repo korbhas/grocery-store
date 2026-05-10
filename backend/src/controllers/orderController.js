@@ -1,161 +1,257 @@
 const db = require('../db/db');
 const Razorpay = require('razorpay');
+const { asyncHandler, AppError, crypto: cryptoModule } = require('../utils/helpers');
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-exports.createOrder = async (req, res) => {
-  try {
-    const { delivery_address } = req.body;
-    if (!delivery_address) return res.status(400).json({ error: 'Delivery address is required' });
+async function enrichOrders(orderRows) {
+  if (orderRows.length === 0) return [];
 
-    const cartItems = await db('cart_items')
-      .join('products', 'cart_items.product_id', 'products.id')
-      .select('cart_items.*', 'products.price', 'products.stock_qty', 'products.name')
-      .where('cart_items.user_id', req.dbUser.id);
+  const orderIds = orderRows.map((o) => o.id);
 
-    if (cartItems.length === 0) return res.status(400).json({ error: 'Cart is empty' });
+  const allItems = await db('order_items')
+    .join('products', 'order_items.product_id', 'products.id')
+    .select('order_items.*', 'products.name', 'products.image_url', 'products.unit')
+    .whereIn('order_items.order_id', orderIds);
 
-    // Validate stock
-    for (const item of cartItems) {
-      if (item.stock_qty < item.quantity) {
-        return res.status(400).json({ error: `Insufficient stock for ${item.name}` });
-      }
+  const allPayments = await db('payments')
+    .whereIn('order_id', orderIds);
+
+  const itemsByOrder = {};
+  for (const item of allItems) {
+    (itemsByOrder[item.order_id] = itemsByOrder[item.order_id] || []).push(item);
+  }
+  const paymentByOrder = {};
+  for (const p of allPayments) {
+    paymentByOrder[p.order_id] = p;
+  }
+
+  return orderRows.map((order) => {
+    const { access_token, ...rest } = order;
+    return {
+      ...rest,
+      items: itemsByOrder[order.id] || [],
+      payment: paymentByOrder[order.id] || null,
+    };
+  });
+}
+
+exports.createOrder = asyncHandler(async (req, res) => {
+  const { delivery_address, delivery_pincode, items, guest_name, guest_email, guest_phone, coupon_id } = req.body;
+  if (!delivery_address || !delivery_address.trim()) {
+    throw new AppError('Delivery address is required', 400);
+  }
+
+  if (delivery_pincode) {
+    const area = await db('delivery_areas')
+      .where({ pincode: String(delivery_pincode).trim(), is_active: true })
+      .first();
+    if (!area) throw new AppError(`We do not deliver to pincode ${delivery_pincode}`, 400);
+  }
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    throw new AppError('Items are required', 400);
+  }
+
+  const userId = req.dbUser ? req.dbUser.id : null;
+
+  if (!userId) {
+    if (!guest_name || !guest_name.trim()) {
+      throw new AppError('Name is required for guest checkout', 400);
+    }
+    if (!guest_email || !guest_email.trim()) {
+      throw new AppError('Email is required for guest checkout', 400);
+    }
+  }
+
+  const result = await db.transaction(async (trx) => {
+    const productIds = items.map((i) => i.product_id);
+    const products = await trx('products')
+      .whereIn('id', productIds)
+      .forUpdate();
+
+    const productMap = {};
+    for (const p of products) {
+      productMap[p.id] = p;
     }
 
-    const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const cartItems = items.map((item) => {
+      const product = productMap[item.product_id];
+      if (!product) throw new AppError(`Product ${item.product_id} not found`, 400);
+      if (!product.is_active) throw new AppError(`${product.name} is no longer available`, 400);
+      if (product.stock_qty < item.quantity) throw new AppError(`Insufficient stock for ${product.name}`, 400);
+      return {
+        product_id: product.id,
+        quantity: item.quantity,
+        price: parseFloat(product.price),
+        name: product.name,
+      };
+    });
 
-    // Create Razorpay order
+    let totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    let discountAmount = 0;
+    let appliedCouponId = null;
+
+    if (coupon_id) {
+      const coupon = await trx('coupons').where({ id: coupon_id }).first();
+      if (!coupon) throw new AppError('Invalid coupon', 400);
+      if (!coupon.is_active) throw new AppError('Coupon is no longer active', 400);
+      const now = new Date();
+      if (coupon.starts_at && new Date(coupon.starts_at) > now) throw new AppError('Coupon is not yet active', 400);
+      if (coupon.expires_at && new Date(coupon.expires_at) < now) throw new AppError('Coupon has expired', 400);
+      if (coupon.max_uses !== null && coupon.used_count >= coupon.max_uses) throw new AppError('Coupon has reached its usage limit', 400);
+      if (totalAmount < Number(coupon.min_order_amount)) throw new AppError(`Minimum order amount is ₹${coupon.min_order_amount}`, 400);
+
+      if (coupon.discount_type === 'percentage') {
+        discountAmount = (totalAmount * Number(coupon.discount_value)) / 100;
+      } else {
+        discountAmount = Number(coupon.discount_value);
+      }
+      if (discountAmount > totalAmount) discountAmount = totalAmount;
+      discountAmount = Math.round(discountAmount * 100) / 100;
+      totalAmount = Math.round((totalAmount - discountAmount) * 100) / 100;
+      appliedCouponId = coupon.id;
+
+      await trx('coupons').where({ id: coupon.id }).increment('used_count', 1);
+    }
+
     const razorpayOrder = await razorpay.orders.create({
-      amount: Math.round(totalAmount * 100), // paise
+      amount: Math.round(totalAmount * 100),
       currency: 'INR',
       receipt: `order_${Date.now()}`,
     });
 
-    // Create order in DB
-    const [order] = await db('orders').insert({
-      user_id: req.dbUser.id,
+    const orderData = {
       status: 'pending',
       total_amount: totalAmount,
-      delivery_address,
+      delivery_address: delivery_address.trim(),
       razorpay_order_id: razorpayOrder.id,
-    }).returning('*');
+      access_token: cryptoModule.randomUUID(),
+      coupon_id: appliedCouponId,
+      discount_amount: discountAmount,
+    };
 
-    // Create order items
+    if (userId) {
+      orderData.user_id = userId;
+    } else {
+      orderData.guest_name = guest_name.trim();
+      orderData.guest_email = guest_email.trim();
+      orderData.guest_phone = guest_phone ? guest_phone.trim() : null;
+    }
+
+    const [order] = await trx('orders').insert(orderData).returning('*');
+
     const orderItems = cartItems.map((item) => ({
       order_id: order.id,
       product_id: item.product_id,
       quantity: item.quantity,
       unit_price: item.price,
     }));
-    await db('order_items').insert(orderItems);
+    await trx('order_items').insert(orderItems);
 
-    // Create payment record
-    await db('payments').insert({
+    await trx('payments').insert({
       order_id: order.id,
       amount: totalAmount,
       status: 'created',
     });
 
-    res.json({
+    if (userId) {
+      await trx('cart_items').where({ user_id: userId }).del();
+    }
+
+    return {
       order_id: order.id,
       razorpay_order_id: razorpayOrder.id,
       amount: totalAmount,
       currency: 'INR',
       key_id: process.env.RAZORPAY_KEY_ID,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+      access_token: order.access_token,
+    };
+  });
+
+  res.json(result);
+});
+
+exports.verifyPayment = asyncHandler(async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    throw new AppError('Missing payment verification fields', 400);
   }
-};
 
-exports.verifyPayment = async (req, res) => {
-  try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    const crypto = require('crypto');
+  const expectedSignature = cryptoModule
+    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest('hex');
 
-    const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest('hex');
+  if (expectedSignature !== razorpay_signature) {
+    throw new AppError('Invalid payment signature', 400);
+  }
 
-    if (expectedSignature !== razorpay_signature) {
-      return res.status(400).json({ error: 'Invalid payment signature' });
-    }
+  const result = await db.transaction(async (trx) => {
+    const order = await trx('orders').where({ razorpay_order_id }).forUpdate().first();
+    if (!order) throw new AppError('Order not found', 404);
 
-    const order = await db('orders').where({ razorpay_order_id }).first();
-    if (!order) return res.status(404).json({ error: 'Order not found' });
+    const etaMinutes = 30 + Math.floor(Math.random() * 31);
+    const estimatedDelivery = new Date(Date.now() + etaMinutes * 60000);
 
-    // Update order status
-    await db('orders').where({ id: order.id }).update({ status: 'processing' });
+    await trx('orders').where({ id: order.id }).update({
+      status: 'processing',
+      estimated_delivery: estimatedDelivery,
+    });
 
-    // Update payment
-    await db('payments').where({ order_id: order.id }).update({
+    await trx('payments').where({ order_id: order.id }).update({
       razorpay_payment_id,
       status: 'captured',
-      paid_at: db.fn.now(),
+      paid_at: trx.fn.now(),
     });
 
-    // Reduce stock
-    const items = await db('order_items').where({ order_id: order.id });
+    const items = await trx('order_items').where({ order_id: order.id });
     for (const item of items) {
-      await db('products').where({ id: item.product_id }).decrement('stock_qty', item.quantity);
+      await trx('products').where({ id: item.product_id }).decrement('stock_qty', item.quantity);
     }
 
-    // Clear cart
-    await db('cart_items').where({ user_id: order.user_id }).del();
+    if (order.user_id) {
+      await trx('cart_items').where({ user_id: order.user_id }).del();
+    }
 
-    res.json({ message: 'Payment verified', order_id: order.id });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+    return { message: 'Payment verified', order_id: order.id };
+  });
 
-exports.getOrders = async (req, res) => {
-  try {
-    const orders = await db('orders')
-      .where({ user_id: req.dbUser.id })
-      .orderBy('created_at', 'desc');
+  res.json(result);
+});
 
-    // Fetch items for each order
-    const ordersWithItems = await Promise.all(
-      orders.map(async (order) => {
-        const items = await db('order_items')
-          .join('products', 'order_items.product_id', 'products.id')
-          .select('order_items.*', 'products.name', 'products.image_url', 'products.unit')
-          .where('order_items.order_id', order.id);
+exports.getOrders = asyncHandler(async (req, res) => {
+  const orderRows = await db('orders')
+    .where({ user_id: req.dbUser.id })
+    .orderBy('created_at', 'desc');
 
-        const payment = await db('payments').where({ order_id: order.id }).first();
+  res.json(await enrichOrders(orderRows));
+});
 
-        return { ...order, items, payment };
-      })
-    );
+exports.getOrder = asyncHandler(async (req, res) => {
+  const accessToken = req.query.t;
 
-    res.json(ordersWithItems);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.getOrder = async (req, res) => {
-  try {
+  if (req.dbUser) {
     const order = await db('orders')
       .where({ id: req.params.id, user_id: req.dbUser.id })
       .first();
-
-    if (!order) return res.status(404).json({ error: 'Order not found' });
-
-    const items = await db('order_items')
-      .join('products', 'order_items.product_id', 'products.id')
-      .select('order_items.*', 'products.name', 'products.image_url', 'products.unit')
-      .where('order_items.order_id', order.id);
-
-    const payment = await db('payments').where({ order_id: order.id }).first();
-
-    res.json({ ...order, items, payment });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (!order) throw new AppError('Order not found', 404);
+    return res.json((await enrichOrders([order]))[0]);
   }
-};
+
+  if (!accessToken) {
+    throw new AppError('Access token is required for guest order access', 400);
+  }
+
+  const order = await db('orders')
+    .where({ id: req.params.id, access_token: accessToken })
+    .first();
+  if (!order) throw new AppError('Order not found', 404);
+
+  const result = (await enrichOrders([order]))[0];
+  const { access_token, ...safe } = result;
+  return res.json(safe);
+});

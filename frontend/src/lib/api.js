@@ -5,17 +5,9 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Attach Clerk token to every request
-export function setAuthToken(getToken) {
-  api.interceptors.request.use(async (config) => {
-    try {
-      const token = await getToken();
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    } catch {}
-    return config;
-  });
+const token = localStorage.getItem('token');
+if (token) {
+  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
 
 export default api;

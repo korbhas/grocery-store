@@ -1,67 +1,54 @@
 const db = require('../db/db');
+const { escapeLike, paginate, asyncHandler } = require('../utils/helpers');
 
-exports.getProducts = async (req, res) => {
-  try {
-    const { category, search, page = 1, limit = 20 } = req.query;
-    let query = db('products')
-      .leftJoin('categories', 'products.category_id', 'categories.id')
-      .select('products.*', 'categories.name as category_name', 'categories.slug as category_slug')
-      .where('products.is_active', true);
+function applyFilters(query, { category, search }) {
+  let q = query
+    .leftJoin('categories', 'products.category_id', 'categories.id')
+    .where('products.is_active', true);
 
-    if (category) {
-      query = query.where('categories.slug', category);
-    }
-
-    if (search) {
-      query = query.where(function () {
-        this.whereILike('products.name', `%${search}%`)
-          .orWhereILike('products.description', `%${search}%`);
-      });
-    }
-
-    const offset = (page - 1) * limit;
-    const products = await query.orderBy('products.name').limit(limit).offset(offset);
-
-    const [{ count }] = await db('products')
-      .leftJoin('categories', 'products.category_id', 'categories.id')
-      .where('products.is_active', true)
-      .modify((qb) => {
-        if (category) qb.where('categories.slug', category);
-        if (search) {
-          qb.where(function () {
-            this.whereILike('products.name', `%${search}%`)
-              .orWhereILike('products.description', `%${search}%`);
-          });
-        }
-      })
-      .count('products.id as count');
-
-    res.json({ products, total: parseInt(count), page: parseInt(page), limit: parseInt(limit) });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  if (category) {
+    q = q.where('categories.slug', category);
   }
-};
-
-exports.getProduct = async (req, res) => {
-  try {
-    const product = await db('products')
-      .leftJoin('categories', 'products.category_id', 'categories.id')
-      .select('products.*', 'categories.name as category_name')
-      .where('products.id', req.params.id)
-      .first();
-
-    if (!product) return res.status(404).json({ error: 'Product not found' });
-    res.json(product);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  if (search) {
+    const term = `%${escapeLike(search)}%`;
+    q = q.where(function () {
+      this.whereILike('products.name', term)
+        .orWhereILike('products.description', term);
+    });
   }
-};
+  return q;
+}
 
-exports.getCategories = async (req, res) => {
-  try {
-    const categories = await db('categories').orderBy('name');
-    res.json(categories);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+exports.getProducts = asyncHandler(async (req, res) => {
+  const { category, search, page = 1, limit = 20 } = req.query;
+  const p = Math.max(1, parseInt(page) || 1);
+  const l = Math.min(100, Math.max(1, parseInt(limit) || 20));
+
+  const filtered = applyFilters(db('products'), { category, search });
+
+  const products = await paginate(
+    filtered.clone().select('products.*', 'categories.name as category_name', 'categories.slug as category_slug').orderBy('products.name'),
+    p,
+    l
+  );
+
+  const [{ count }] = await applyFilters(db('products'), { category, search }).count('products.id as count');
+
+  res.json({ products, total: parseInt(count), page: p, limit: l });
+});
+
+exports.getProduct = asyncHandler(async (req, res) => {
+  const product = await db('products')
+    .leftJoin('categories', 'products.category_id', 'categories.id')
+    .select('products.*', 'categories.name as category_name')
+    .where('products.id', req.params.id)
+    .first();
+
+  if (!product) return res.status(404).json({ error: 'Product not found' });
+  res.json(product);
+});
+
+exports.getCategories = asyncHandler(async (req, res) => {
+  const categories = await db('categories').orderBy('name');
+  res.json(categories);
+});

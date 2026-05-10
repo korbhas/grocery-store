@@ -1,0 +1,18 @@
+- main [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e11]: Admin Portal
+      - paragraph [ref=e12]: Sign in with your admin credentials
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: Email
+        - textbox "Email" [ref=e17]:
+          - /placeholder: admin@freshmart.com
+          - text: admin@freshmart.com
+      - generic [ref=e18]:
+        - generic [ref=e19]: Password
+        - textbox "Password" [ref=e20]:
+          - /placeholder: Enter your password
+          - text: admin123
+      - button "Sign In to Admin" [ref=e21] [cursor=pointer]

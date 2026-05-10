@@ -1,0 +1,8 @@
+- generic [ref=e2]:
+  - main [ref=e3]:
+    - generic [ref=e23]:
+      - button "Menu" [ref=e25] [cursor=pointer]:
+        - img
+        - text: Menu
+      - generic [ref=e26]: Failed to load dashboard
+  - status [ref=e32]: Welcome, Admin!

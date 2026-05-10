@@ -100,4 +100,6 @@ export function CartProvider({ children }) {
   );
 }
 
-export const useCart = () => useContext(CartContext);
+const useCart = () => useContext(CartContext);
+
+export { useCart };

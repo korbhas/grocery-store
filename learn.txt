@@ -1,0 +1,53 @@
+Core skills ranked by importance:                                                                                                        
+                                                                                                                                           
+  1. Reading error messages                                                                                                                
+  Don't skim — read the full message. It usually tells you the file, line number, and what went wrong.
+                                                                                                                                           
+  2. Tracing the flow
+  Follow a request from frontend → API route → controller → DB → response. Find where it breaks.                                           
+                                                                                                                                           
+  3. Using console.log strategically
+  Print variables at key points to see what values actually are vs. what you expect.                                                       
+                                                                                                                                           
+  4. Reading code like a computer
+  Execute the code in your head line by line. Ask "what does this variable hold right now?"                                                
+                                                                                                                                           
+  5. Isolating the problem
+  Narrow down: is it the frontend? the backend? the DB? Test each layer separately (use Postman/curl to hit the API directly, bypassing the
+   frontend).                                                                                                                              
+   
+  6. Googling error messages                                                                                                               
+  Copy the exact error, paste in Google. Someone has hit it before.
+                                                                                                                                           
+  7. Rubber duck debugging
+  Explain the bug out loud (or to me). The act of explaining often reveals the answer.                                                     
+                                                                                                                                           
+  8. Reading docs
+  When a library behaves unexpectedly, check its docs — you may be using it wrong.
+
+
+
+
+  Read code written by people you respect
+Not documentation — actual source code. Pick a library you use (Express, React, whatever's in your stack) and read its internals. You'll absorb idioms, naming conventions, how experienced engineers structure decisions, and what "taste" looks like in code. GitHub is a free library of master-level work.
+Follow the arguments, not just the outcomes
+The real culture lives in debates — DHH vs the TDD crowd, the tabs vs spaces stuff, the "clean code is overrated" discourse. Don't pick a side immediately. Read the reasoning. This is how you develop opinions rather than just preferences, and opinions are what make you a thinking engineer.
+Read old writing
+Joel Spolsky's essays. Paul Graham's early stuff. The Pragmatic Programmer. Things written before AI and Stack Overflow existed, when engineers had to think harder and write it down. A lot of foundational intuitions — about simplicity, about shipping, about what software is for — live there and haven't been absorbed into vibe coding culture yet.
+Hang around people who care too much
+Find communities where people are slightly obsessive — a Discord, a subreddit, a local meetup, an open source repo's issue tracker. Caring-too-much is contagious. You'll start noticing things you never noticed before just by proximity to people who notice them.
+Contribute to something you didn't build
+Open source contribution forces you to understand a codebase on its own terms, not yours. You have to read conventions, follow someone else's taste, get feedback from a maintainer who has opinions. That friction is cultural immersion. Even a small PR teaches you more about collaborative coding than months of solo projects.
+Notice what the culture doesn't say
+A lot of engineering culture is transmitted through what people mock or roll their eyes at — over-engineered solutions, "resume-driven development", premature optimization. Pay attention to what experienced engineers find cringe. That negative space is full of hard-won lessons.
+Ship and show things
+Culture is participatory. Post your project, write a short blog post about something you figured out, share a weird bug you hit. You'll get feedback, start conversations, and become a node in the network rather than a consumer of it. Even if the response is small, you're practicing the identity of someone who makes things and puts them out.
+Learn some history
+How did we get from assembly to C to OOP to functional to the AI-assisted present? Not as trivia — but because understanding why paradigms emerged makes you much less dogmatic about any one of them. It also makes you better at predicting what actually matters vs what's a passing trend.
+
+
+sites
+paperswelove
+
+source code
+redis,sqllite,django,rails

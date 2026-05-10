@@ -1,0 +1,341 @@
+- generic [active]:
+  - generic:
+    - main:
+      - generic:
+        - generic:
+          - generic:
+            - button:
+              - img
+              - text: Menu
+          - generic:
+            - generic:
+              - heading [level=1]: Products
+              - button:
+                - img
+                - text: Add Product
+            - generic:
+              - generic:
+                - img
+                - textbox:
+                  - /placeholder: Search products...
+              - combobox:
+                - img
+                - generic: All Stock
+                - img
+              - combobox:
+                - generic: All Categories
+                - img
+            - generic:
+              - generic:
+                - generic:
+                  - table:
+                    - rowgroup:
+                      - row:
+                        - columnheader: Img
+                        - columnheader: Name
+                        - columnheader: Category
+                        - columnheader: Price
+                        - columnheader: Stock
+                        - columnheader: Status
+                        - columnheader: Actions
+                    - rowgroup:
+                      - row:
+                        - cell:
+                          - generic: —
+                        - cell: GUU
+                        - cell: Bakery
+                        - cell: ₹0.00
+                        - cell:
+                          - generic: "10"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Bread
+                        - cell: Bakery
+                        - cell: ₹45.00
+                        - cell:
+                          - generic: "57"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Red Chili Powder
+                        - cell: Spices & Condiments
+                        - cell: ₹70.00
+                        - cell:
+                          - generic: "85"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Turmeric Powder
+                        - cell: Spices & Condiments
+                        - cell: ₹60.00
+                        - cell:
+                          - generic: "90"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Cola (2L)
+                        - cell: Snacks & Beverages
+                        - cell: ₹90.00
+                        - cell:
+                          - generic: "80"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Chips (Large)
+                        - cell: Snacks & Beverages
+                        - cell: ₹50.00
+                        - cell:
+                          - generic: "100"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Toor Dal (1kg)
+                        - cell: Grains & Staples
+                        - cell: ₹140.00
+                        - cell:
+                          - generic: "70"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Wheat Flour (5kg)
+                        - cell: Grains & Staples
+                        - cell: ₹250.00
+                        - cell:
+                          - generic: "60"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Rice (5kg)
+                        - cell: Grains & Staples
+                        - cell: ₹350.00
+                        - cell:
+                          - generic: "50"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Paneer (200g)
+                        - cell: Dairy & Eggs
+                        - cell: ₹80.00
+                        - cell:
+                          - generic: "40"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Eggs (6 pack)
+                        - cell: Dairy & Eggs
+                        - cell: ₹50.00
+                        - cell:
+                          - generic: "150"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Milk (500ml)
+                        - cell: Dairy & Eggs
+                        - cell: ₹30.00
+                        - cell:
+                          - generic: "200"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Apple
+                        - cell: Fruits & Vegetables
+                        - cell: ₹150.00
+                        - cell:
+                          - generic: "57"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Onion
+                        - cell: Fruits & Vegetables
+                        - cell: ₹35.00
+                        - cell:
+                          - generic: "120"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Tomato
+                        - cell: Fruits & Vegetables
+                        - cell: ₹30.00
+                        - cell:
+                          - generic: "80"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+                      - row:
+                        - cell
+                        - cell: Banana
+                        - cell: Fruits & Vegetables
+                        - cell: ₹40.00
+                        - cell:
+                          - generic: "96"
+                        - cell:
+                          - button:
+                            - generic: Active
+                        - cell:
+                          - generic:
+                            - button:
+                              - img
+                            - button:
+                              - img
+            - paragraph: 16 product(s) shown
+    - status [ref=e43]: Image uploaded
+  - dialog "New Product" [ref=e7]:
+    - heading "New Product" [level=2] [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: Name *
+        - textbox "Name *" [ref=e13]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Description
+        - textbox "Description" [ref=e16]
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: Category
+          - combobox "Category" [ref=e20]:
+            - option "None" [selected]
+            - option "Bakery"
+            - option "Dairy & Eggs"
+            - option "Fruits & Vegetables"
+            - option "Grains & Staples"
+            - option "Snacks & Beverages"
+            - option "Spices & Condiments"
+        - generic [ref=e21]:
+          - generic [ref=e22]: Price *
+          - spinbutton "Price *" [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: Unit
+          - textbox "Unit" [ref=e27]: piece
+        - generic [ref=e28]:
+          - generic [ref=e29]: Stock Qty
+          - spinbutton "Stock Qty" [ref=e30]
+      - generic [ref=e31]:
+        - generic [ref=e32]: Product Image
+        - generic [ref=e44]:
+          - img "preview" [ref=e45]
+          - button "×" [ref=e46] [cursor=pointer]
+        - button "Change Image" [ref=e47] [cursor=pointer]
+        - textbox "Or paste an image URL" [ref=e34]: https://res.cloudinary.com/dyp0rej0v/image/upload/v1777839133/kyttyftaddrbulrkrqhj.png
+      - button "Create Product" [ref=e35] [cursor=pointer]
+    - button "Close" [ref=e36] [cursor=pointer]:
+      - img
+      - generic [ref=e37]: Close

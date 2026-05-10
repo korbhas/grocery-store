@@ -1,0 +1,139 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e7]:
+      - button "Menu" [ref=e9] [cursor=pointer]:
+        - img
+        - text: Menu
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - heading "Dashboard" [level=1] [ref=e12]
+          - generic [ref=e13]:
+            - button "Today" [ref=e14] [cursor=pointer]
+            - button "This Week" [ref=e15] [cursor=pointer]
+            - button "This Month" [ref=e16] [cursor=pointer]
+        - generic [ref=e17]:
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - generic [ref=e21]:
+                - paragraph [ref=e22]: Revenue
+                - paragraph [ref=e23]: ₹40
+              - img [ref=e25]
+            - paragraph [ref=e28]: "-96.2% vs prev month"
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e32]:
+                - paragraph [ref=e33]: Orders
+                - paragraph [ref=e34]: "1"
+                - paragraph [ref=e35]: 3 pending
+              - img [ref=e37]
+            - paragraph [ref=e41]: "-83.3% vs prev month"
+          - generic [ref=e44]:
+            - generic [ref=e45]:
+              - paragraph [ref=e46]: Products
+              - paragraph [ref=e47]: "15"
+            - img [ref=e49]
+          - generic [ref=e55]:
+            - generic [ref=e56]:
+              - paragraph [ref=e57]: Low Stock
+              - paragraph [ref=e58]: "0"
+            - img [ref=e60]
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e65]: Revenue Comparison
+            - generic [ref=e68]:
+              - generic:
+                - status:
+                  - paragraph: May 3
+                  - list:
+                    - listitem: "This Month : ₹40"
+                    - listitem: "Last Month : ₹0"
+              - list [ref=e70]:
+                - listitem [ref=e71]:
+                  - img "current legend icon" [ref=e72]
+                  - text: This Month
+                - listitem [ref=e74]:
+                  - img "previous legend icon" [ref=e75]
+                  - text: Last Month
+              - application [ref=e77]:
+                - generic [ref=e110]:
+                  - generic [ref=e111]:
+                    - generic [ref=e113]: May 3
+                    - generic [ref=e115]: Day 28
+                    - generic [ref=e117]: Day 29
+                  - generic [ref=e118]:
+                    - generic [ref=e120]: ₹0
+                    - generic [ref=e122]: ₹200
+                    - generic [ref=e124]: ₹400
+                    - generic [ref=e126]: ₹600
+                    - generic [ref=e128]: ₹800
+          - generic [ref=e130]:
+            - generic [ref=e132]:
+              - img [ref=e133]
+              - text: Pending Orders
+            - generic [ref=e137]:
+              - text: "3"
+              - paragraph [ref=e138]: awaiting processing
+              - link "View Orders" [ref=e139] [cursor=pointer]:
+                - /url: /admin/orders?status=pending
+                - button "View Orders" [ref=e140]
+        - generic [ref=e141]:
+          - generic [ref=e143]: Recent Orders
+          - table [ref=e146]:
+            - rowgroup [ref=e147]:
+              - row "Order Customer Date Amount Status" [ref=e148]:
+                - columnheader "Order" [ref=e149]
+                - columnheader "Customer" [ref=e150]
+                - columnheader "Date" [ref=e151]
+                - columnheader "Amount" [ref=e152]
+                - columnheader "Status" [ref=e153]
+            - rowgroup [ref=e154]:
+              - row "#29 kangkan May 3, 10:09 PM ₹40 Pending" [ref=e155]:
+                - cell "#29" [ref=e156]
+                - cell "kangkan" [ref=e157]
+                - cell "May 3, 10:09 PM" [ref=e158]
+                - cell "₹40" [ref=e159]
+                - cell "Pending" [ref=e160]:
+                  - generic [ref=e161]: Pending
+              - row "#28 kajd Apr 29, 12:09 PM ₹85 Processing" [ref=e162]:
+                - cell "#28" [ref=e163]
+                - cell "kajd" [ref=e164]
+                - cell "Apr 29, 12:09 PM" [ref=e165]
+                - cell "₹85" [ref=e166]
+                - cell "Processing" [ref=e167]:
+                  - generic [ref=e168]: Processing
+              - row "#27 bhaskar Apr 29, 12:08 PM ₹190 Processing" [ref=e169]:
+                - cell "#27" [ref=e170]
+                - cell "bhaskar" [ref=e171]
+                - cell "Apr 29, 12:08 PM" [ref=e172]
+                - cell "₹190" [ref=e173]
+                - cell "Processing" [ref=e174]:
+                  - generic [ref=e175]: Processing
+              - row "#26 bhaskar Apr 29, 12:03 PM ₹235 Processing" [ref=e176]:
+                - cell "#26" [ref=e177]
+                - cell "bhaskar" [ref=e178]
+                - cell "Apr 29, 12:03 PM" [ref=e179]
+                - cell "₹235" [ref=e180]
+                - cell "Processing" [ref=e181]:
+                  - generic [ref=e182]: Processing
+              - row "#25 Customer Apr 29, 11:00 AM ₹235 Pending" [ref=e183]:
+                - cell "#25" [ref=e184]
+                - cell "Customer" [ref=e185]
+                - cell "Apr 29, 11:00 AM" [ref=e186]
+                - cell "₹235" [ref=e187]
+                - cell "Pending" [ref=e188]:
+                  - generic [ref=e189]: Pending
+              - row "#24 Customer Apr 28, 11:57 AM ₹235 Processing" [ref=e190]:
+                - cell "#24" [ref=e191]
+                - cell "Customer" [ref=e192]
+                - cell "Apr 28, 11:57 AM" [ref=e193]
+                - cell "₹235" [ref=e194]
+                - cell "Processing" [ref=e195]:
+                  - generic [ref=e196]: Processing
+              - row "#23 Customer Apr 28, 11:38 AM ₹85 Pending" [ref=e197]:
+                - cell "#23" [ref=e198]
+                - cell "Customer" [ref=e199]
+                - cell "Apr 28, 11:38 AM" [ref=e200]
+                - cell "₹85" [ref=e201]
+                - cell "Pending" [ref=e202]:
+                  - generic [ref=e203]: Pending
+  - generic [ref=e204]: ₹0

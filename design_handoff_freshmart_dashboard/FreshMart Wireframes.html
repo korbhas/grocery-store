@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>FreshMart — Wireframe Explorations</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; font-family: 'DM Sans', system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="wireframe-primitives.jsx"></script>
+<script type="text/babel" src="v01-sidebar-search.jsx"></script>
+<script type="text/babel" src="v02-bento-hero.jsx"></script>
+<script type="text/babel" src="v03-tracker-recipes.jsx"></script>
+<script type="text/babel" src="v04-magazine.jsx"></script>
+<script type="text/babel" src="v05-command-palette.jsx"></script>
+
+<script type="text/babel">
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "showSidebar": true
+  }/*EDITMODE-END*/;
+
+  function App() {
+    const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+    const showSidebar = tweaks.showSidebar;
+
+    return (
+      <React.Fragment>
+        <DesignCanvas>
+          <DCSection id="briefing" title="Brief & system" subtitle="Sidebar app shell · dominant search · trust signals · discovery for first-time visitors">
+            <DCArtboard id="brief" label="00 · The brief" width={760} height={880}>
+              <BriefArtboard />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="explorations" title="Wireframe explorations" subtitle="5 directions — drag to reorder · click label or ↗ to focus">
+            <DCArtboard id="v1" label="01 · Sidebar rail + search-led hero" width={1180} height={880} data-screen-label="01 Sidebar rail + search hero">
+              <Variation01 showSidebar={showSidebar} />
+            </DCArtboard>
+            <DCArtboard id="v2" label="02 · Wide sidebar + bento hero" width={1180} height={880} data-screen-label="02 Bento hero">
+              <Variation02 showSidebar={showSidebar} />
+            </DCArtboard>
+            <DCArtboard id="v3" label="03 · Delivery tracker + recipe rail" width={1180} height={880} data-screen-label="03 Tracker + recipes">
+              <Variation03 showSidebar={showSidebar} />
+            </DCArtboard>
+            <DCArtboard id="v4" label="04 · Magazine / editorial cover" width={1180} height={880} data-screen-label="04 Magazine">
+              <Variation04 showSidebar={showSidebar} />
+            </DCArtboard>
+            <DCArtboard id="v5" label="05 · Command palette as hero" width={1180} height={880} data-screen-label="05 Command palette">
+              <Variation05 showSidebar={showSidebar} />
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+
+        <TweaksPanel title="Tweaks">
+          <TweakSection title="Layout">
+            <TweakToggle label="Show sidebar" value={tweaks.showSidebar}
+              onChange={(v) => setTweak('showSidebar', v)} />
+            <div style={{ fontSize: 11, color: '#888', lineHeight: 1.4, marginTop: 4 }}>
+              Toggles the left navigation rail across all 5 variations so you can compare with/without.
+            </div>
+          </TweakSection>
+        </TweaksPanel>
+      </React.Fragment>
+    );
+  }
+
+  function BriefArtboard() {
+    return (
+      <div style={{ width: 760, height: 880, background: W.paper, padding: '36px 40px', fontFamily: W.fontUI, color: W.ink, overflow: 'hidden' }}>
+        <div style={{ fontFamily: W.fontMono, fontSize: 10, letterSpacing: 1.8, color: W.ink3 }}>WIREFRAME · APR 28, 2026 · 5 OPTIONS</div>
+        <div style={{ fontFamily: W.font, fontSize: 56, fontWeight: 700, lineHeight: 1, letterSpacing: -1, marginTop: 6 }}>
+          FreshMart <span style={{ color: W.green }}>·</span> a fresh take.
+        </div>
+        <div style={{ fontFamily: W.fontUI, fontSize: 15, color: W.ink2, marginTop: 12, lineHeight: 1.5, maxWidth: 580 }}>
+          Notes from your brief — five distinctly different directions for the homepage of a generic grocery dashboard. Same content, different organising metaphors.
+        </div>
+
+        <div style={{ marginTop: 28 }}>
+          <SHeading size={20} underline>What I locked in</SHeading>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+          {[
+            ['Shell','Sidebar-led app shell (no big nav)'],
+            ['Search','Hero feature — dominant'],
+            ['Hero','Keep it — make it more useful'],
+            ['Categories','Horizontal pills (current pattern)'],
+            ['Audience','First-time visitors'],
+            ['Priorities','Discovery + trust signals'],
+            ['Fidelity','Mid-fi — sketchy with a touch of green'],
+            ['Tweak','Sidebar show/hide toggle'],
+          ].map((r, i) => (
+            <SBox key={i} w={320} h={50} radius={6}>
+              <div style={{ padding: '7px 12px' }}>
+                <div style={{ fontFamily: W.fontMono, fontSize: 9, color: W.ink3, letterSpacing: 1.4 }}>{r[0].toUpperCase()}</div>
+                <div style={{ fontFamily: W.fontUI, fontSize: 13, fontWeight: 600, marginTop: 2 }}>{r[1]}</div>
+              </div>
+            </SBox>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 28 }}>
+          <SHeading size={20} underline>The five directions</SHeading>
+        </div>
+        <div style={{ marginTop: 10 }}>
+          {[
+            ['01','Sidebar rail + search-led hero','Slim icon rail · big search inside the green hero · trust strip · "new this week" rail.'],
+            ['02','Wide sidebar + bento hero','Full-text sidebar nav · 2-up bento (search · fresh-this-hour · free-delivery progress) · aisle tiles for browse.'],
+            ['03','Delivery tracker + recipe rail','Hero shows live order tracker + 3 trust badges · recipes that auto-fill cart for discovery.'],
+            ['04','Magazine / editorial cover','Newspaper masthead, big editorial title, "in this issue" index, then existing 3-up promo cards.'],
+            ['05','Command palette as hero','Centered ⌘K palette is the hero — peeks a results dropdown · sidebar holds full nav.'],
+          ].map((r) => (
+            <div key={r[0]} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: `1px dashed ${W.lineSoft}` }}>
+              <div style={{ fontFamily: W.fontMono, fontSize: 12, fontWeight: 700, color: W.accent, width: 30 }}>{r[0]}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: W.font, fontSize: 18, fontWeight: 700 }}>{r[1]}</div>
+                <div style={{ fontFamily: W.fontUI, fontSize: 13, color: W.ink2, marginTop: 2, lineHeight: 1.4 }}>{r[2]}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, marginTop: 22, alignItems: 'center' }}>
+          <div style={{ width: 6, height: 6, borderRadius: 3, background: W.green }} />
+          <div style={{ fontFamily: W.fontUI, fontSize: 12, color: W.ink2 }}>
+            Use the <b>Tweaks</b> toggle to compare layouts with the sidebar hidden.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

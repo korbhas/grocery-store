@@ -1,0 +1,14 @@
+[     364ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://ad-tech.byjusweb.com/revive/www/delivery/sidebar.js:0
+[     364ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://ad-tech.byjusweb.com/revive/www/delivery/bannerImpressions.js:0
+[     720ms] TypeError: Cannot read properties of undefined (reading 'length')
+    at https://byjus.com/maths/types-of-graphs/:1403:18432
+    at Object.error (https://byjus.com/maths/types-of-graphs/:1403:18240)
+    at u (https://byjus.com/wp-content/themes/html5blank-stable/js/jquery-custom.min.js:2:27457)
+    at Object.fireWith [as rejectWith] (https://byjus.com/wp-content/themes/html5blank-stable/js/jquery-custom.min.js:2:28202)
+    at k (https://byjus.com/wp-content/themes/html5blank-stable/js/jquery-custom.min.js:2:77676)
+    at XMLHttpRequest.<anonymous> (https://byjus.com/wp-content/themes/html5blank-stable/js/jquery-custom.min.js:2:79882)
+[     719ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://prod-gmaps.byjusweb.com/api/geo_dimensions/india_state_city_list/?limit=3000:0
+[     738ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://prod-gmaps.byjusweb.com/api/geo_dimensions/india_state_city_list/?limit=3000:0
+[     779ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://prod-wtnucleus.byjusweb.com/api/wp/get-ip-location-details:0
+[     780ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://prod-wtnucleus.byjusweb.com/api/wp/check-country-api/:0
+[    2241ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://ad-tech.byjusweb.com/revive/www/delivery/asyncjs.php:0
