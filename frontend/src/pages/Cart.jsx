@@ -37,7 +37,10 @@ export default function Cart() {
                 <img src={item.image_url || '/placeholder.png'} alt={item.name} className="h-16 w-16 rounded-lg object-cover bg-muted" />
                 <div className="min-w-0 flex-1">
                   <h3 className="truncate text-sm font-semibold">{item.name}</h3>
-                  <p className="text-xs text-muted-foreground">₹{item.price} / {item.unit}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.variant_name && <span className="font-medium text-foreground">{item.variant_name} · </span>}
+                    ₹{item.price} / {item.unit}
+                  </p>
                 </div>
                 <div className="flex items-center overflow-hidden rounded-lg border border-[#e23744]">
                   <Button variant="ghost" size="icon" aria-label="Decrease quantity" className="h-8 w-8 rounded-none" onClick={() => updateQuantity(item.id, item.quantity - 1)}>

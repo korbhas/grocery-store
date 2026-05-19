@@ -32,6 +32,22 @@ exports.getProducts = asyncHandler(async (req, res) => {
     l
   );
 
+  if (products.length > 0) {
+    const productIds = products.map((p) => p.id);
+    const variants = await db('product_variants')
+      .whereIn('product_id', productIds)
+      .orderBy('sort_order').orderBy('id');
+
+    const variantMap = {};
+    for (const v of variants) {
+      if (!variantMap[v.product_id]) variantMap[v.product_id] = [];
+      variantMap[v.product_id].push(v);
+    }
+    for (const product of products) {
+      product.variants = variantMap[product.id] || [];
+    }
+  }
+
   const [{ count }] = await applyFilters(db('products'), { category, search }).count('products.id as count');
 
   res.json({ products, total: parseInt(count), page: p, limit: l });
@@ -45,6 +61,11 @@ exports.getProduct = asyncHandler(async (req, res) => {
     .first();
 
   if (!product) return res.status(404).json({ error: 'Product not found' });
+
+  product.variants = await db('product_variants')
+    .where({ product_id: product.id })
+    .orderBy('sort_order').orderBy('id');
+
   res.json(product);
 });
 

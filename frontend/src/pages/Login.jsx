@@ -18,9 +18,9 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password);
+      const user = await login(email, password);
       toast.success('Welcome back!');
-      navigate('/');
+      navigate(user.role === 'admin' ? '/admin' : '/');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Login failed');
     } finally {

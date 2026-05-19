@@ -9,7 +9,7 @@ export default function Navbar({ userRole }) {
   const { totalItems } = useCart();
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0c4a6e] text-white shadow-md">
+    <header className="sticky top-0 z-50 bg-[#1f4d34] text-white shadow-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">

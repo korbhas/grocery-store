@@ -10,6 +10,7 @@ import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import OrderTracking from './pages/OrderTracking';
 import Orders from './pages/Orders';
+import Settings from './pages/Settings';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -49,6 +50,9 @@ function RouterLayout({ user }) {
           <Route path="/register" element={<Register />} />
           <Route path="/orders" element={
             <ProtectedRoute><Orders /></ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute><Settings /></ProtectedRoute>
           } />
           <Route path="/admin/*" element={
             <ProtectedRoute allowedRoles={['admin']}><Admin /></ProtectedRoute>

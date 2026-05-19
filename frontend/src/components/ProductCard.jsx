@@ -1,60 +1,70 @@
 import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '../context/CartContext';
 
 export default function ProductCard({ product }) {
   const { addToCart, items } = useCart();
-  const inCart = items.find((i) => i.product_id === product.id);
-  const outOfStock = product.stock_qty <= 0;
+  const hasVariants = product.variants && product.variants.length > 0;
+  const inCart = items.find((i) => i.product_id === product.id && !i.variant_id);
+  const outOfStock = !hasVariants && product.stock_qty <= 0;
 
   return (
-    <div className="group relative flex h-full flex-col rounded-xl border border-border bg-card pb-2 transition-shadow hover:shadow-lg">
-      <Link to={`/product/${product.id}`} className="block overflow-hidden rounded-t-xl bg-muted">
+    <div className="group relative aspect-square overflow-hidden border border-border bg-muted">
+      {/* Image */}
+      <Link to={`/product/${product.id}`} className="block h-full w-full">
         <img
           src={product.image_url || '/placeholder.png'}
           alt={product.name}
-          className="aspect-square w-full object-cover transition-transform group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        {inCart && !outOfStock && (
-          <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#e23744] text-xs font-bold text-white shadow">
-            {inCart.quantity}
-          </span>
-        )}
       </Link>
 
-      <div className="mt-2 flex flex-1 flex-col px-3">
-        <Link to={`/product/${product.id}`}>
-          <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{product.category_name}</p>
-          <h3 className="mt-0.5 line-clamp-2 text-sm font-semibold leading-tight">{product.name}</h3>
-        </Link>
+      {/* Cart quantity badge */}
+      {inCart && !outOfStock && (
+        <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#e23744] text-[10px] font-bold text-white shadow">
+          {inCart.quantity}
+        </span>
+      )}
 
-        <div className="mt-auto flex items-end justify-between pt-2 pb-1">
-          <div>
-            <span className="text-base font-bold">₹{product.price}</span>
-            <span className="ml-0.5 text-[11px] text-muted-foreground">{product.unit}</span>
+      {/* Bottom overlay */}
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent px-2 pb-2 pt-6">
+        <Link to={`/product/${product.id}`}>
+          <p className="line-clamp-1 text-[11px] font-semibold leading-tight text-white">{product.name}</p>
+        </Link>
+        <div className="mt-1 flex items-center justify-between">
+          <div className="leading-none">
+            {hasVariants ? (
+              <span className="text-xs font-bold text-white">
+                From ₹{Math.min(...product.variants.map((v) => parseFloat(v.price)))}
+              </span>
+            ) : (
+              <span className="text-xs font-bold text-white">₹{product.price}</span>
+            )}
           </div>
 
-          {outOfStock ? (
-            <Badge variant="destructive" className="text-[10px] px-2 py-0.5">Out of stock</Badge>
+          {hasVariants ? (
+            <Link
+              to={`/product/${product.id}`}
+              className="inline-flex h-6 items-center rounded-md bg-[#e23744] px-2 text-[10px] font-bold text-white hover:bg-[#c52d39]"
+            >
+              Choose
+            </Link>
+          ) : outOfStock ? (
+            <Badge variant="destructive" className="text-[9px] px-1.5 py-0">Out of stock</Badge>
+          ) : inCart ? (
+            <Link to="/cart" className="inline-flex h-6 w-6 items-center justify-center rounded-md text-white hover:bg-white/20">
+              <ShoppingCart size={13} />
+            </Link>
           ) : (
-            <div className="relative">
-              {inCart ? (
-                <Link to="/cart" className="inline-flex h-8 items-center rounded-lg border border-[#e23744] bg-white px-3 text-sm font-bold text-[#e23744] hover:bg-red-50">
-                  Go to Cart
-                </Link>
-              ) : (
-                <Button
-                  size="sm"
-                  onClick={() => addToCart(product)}
-                  className="h-8 rounded-lg bg-[#e23744] px-3 font-bold hover:bg-[#c52d39]"
-                >
-                  <Plus size={14} className="mr-0.5" />
-                  ADD
-                </Button>
-              )}
-            </div>
+            <Button
+              size="sm"
+              onClick={() => addToCart(product)}
+              className="h-6 w-6 rounded-md bg-transparent p-0 text-white hover:bg-white/20"
+            >
+              <Plus size={13} />
+            </Button>
           )}
         </div>
       </div>

@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const emptyProduct = { name: '', description: '', category_id: '', price: '', unit: 'piece', stock_qty: '', image_url: '' };
+const emptyVariant = () => ({ name: '', price: '', stock_qty: '', is_default: false });
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -20,6 +21,8 @@ export default function AdminProducts() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyProduct);
+  const [variants, setVariants] = useState([]);
+  const [deletedVariantIds, setDeletedVariantIds] = useState([]);
   const [search, setSearch] = useState('');
   const [stockFilter, setStockFilter] = useState('all');
   const [catFilter, setCatFilter] = useState('all');
@@ -68,27 +71,78 @@ export default function AdminProducts() {
     return true;
   });
 
+  const addVariantRow = () => setVariants((prev) => [...prev, emptyVariant()]);
+
+  const updateVariantRow = (index, field, value) => {
+    setVariants((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      if (field === 'is_default' && value) {
+        next.forEach((v, i) => { if (i !== index) next[i] = { ...v, is_default: false }; });
+      }
+      return next;
+    });
+  };
+
+  const removeVariantRow = (index) => {
+    setVariants((prev) => {
+      const v = prev[index];
+      if (v.id) setDeletedVariantIds((d) => [...d, v.id]);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = { ...form, price: parseFloat(form.price), stock_qty: parseInt(form.stock_qty) || 0, category_id: form.category_id || null };
+      const payload = {
+        ...form,
+        price: parseFloat(form.price),
+        stock_qty: parseInt(form.stock_qty) || 0,
+        category_id: form.category_id || null,
+      };
+
+      let productId = editing;
       if (editing) {
         await api.put(`/admin/products/${editing}`, payload);
-        toast.success('Product updated');
       } else {
-        await api.post('/admin/products', payload);
-        toast.success('Product created');
+        const { data } = await api.post('/admin/products', payload);
+        productId = data.id;
       }
+
+      // delete removed variants
+      for (const vid of deletedVariantIds) {
+        await api.delete(`/admin/products/${productId}/variants/${vid}`);
+      }
+
+      // upsert variants
+      for (const v of variants) {
+        const vPayload = {
+          name: v.name,
+          price: parseFloat(v.price),
+          stock_qty: parseInt(v.stock_qty) || 0,
+          is_default: v.is_default || false,
+        };
+        if (v.id) {
+          await api.put(`/admin/products/${productId}/variants/${v.id}`, vPayload);
+        } else {
+          await api.post(`/admin/products/${productId}/variants`, vPayload);
+        }
+      }
+
+      toast.success(editing ? 'Product updated' : 'Product created');
       setShowForm(false);
       setEditing(null);
       setForm(emptyProduct);
+      setVariants([]);
+      setDeletedVariantIds([]);
       fetchProducts();
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed');
     }
   };
 
-  const handleEdit = (product) => {
+  const handleEdit = async (product) => {
     setForm({
       name: product.name,
       description: product.description || '',
@@ -99,6 +153,13 @@ export default function AdminProducts() {
       image_url: product.image_url || '',
     });
     setEditing(product.id);
+    setDeletedVariantIds([]);
+    try {
+      const { data } = await api.get(`/admin/products/${product.id}/variants`);
+      setVariants(data);
+    } catch {
+      setVariants([]);
+    }
     setShowForm(true);
   };
 
@@ -116,7 +177,16 @@ export default function AdminProducts() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Products</h1>
-        <Button onClick={() => { setForm(emptyProduct); setEditing(null); setShowForm(true); }} className="gap-1.5">
+        <Button
+          onClick={() => {
+            setForm(emptyProduct);
+            setEditing(null);
+            setVariants([]);
+            setDeletedVariantIds([]);
+            setShowForm(true);
+          }}
+          className="gap-1.5"
+        >
           <Plus size={16} />
           Add Product
         </Button>
@@ -152,7 +222,10 @@ export default function AdminProducts() {
         </Select>
       </div>
 
-      <Dialog open={showForm} onOpenChange={setShowForm}>
+      <Dialog open={showForm} onOpenChange={(open) => {
+        setShowForm(open);
+        if (!open) { setVariants([]); setDeletedVariantIds([]); }
+      }}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit Product' : 'New Product'}</DialogTitle>
@@ -169,13 +242,18 @@ export default function AdminProducts() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="prod-cat">Category</Label>
-                <select id="prod-cat" value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs">
+                <select
+                  id="prod-cat"
+                  value={form.category_id}
+                  onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs"
+                >
                   <option value="">None</option>
                   {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="prod-price">Price *</Label>
+                <Label htmlFor="prod-price">Base Price *</Label>
                 <Input id="prod-price" type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
               </div>
             </div>
@@ -185,7 +263,7 @@ export default function AdminProducts() {
                 <Input id="prod-unit" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="prod-stock">Stock Qty</Label>
+                <Label htmlFor="prod-stock">Base Stock</Label>
                 <Input id="prod-stock" type="number" value={form.stock_qty} onChange={(e) => setForm({ ...form, stock_qty: e.target.value })} />
               </div>
             </div>
@@ -221,6 +299,68 @@ export default function AdminProducts() {
                 onChange={(e) => setForm({ ...form, image_url: e.target.value })}
               />
             </div>
+
+            {/* Variants */}
+            <div className="space-y-3 rounded-lg border border-dashed p-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">Variants <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                <Button type="button" size="sm" variant="outline" className="h-7 gap-1 text-xs" onClick={addVariantRow}>
+                  <Plus size={12} /> Add Variant
+                </Button>
+              </div>
+              {variants.length === 0 && (
+                <p className="text-xs text-muted-foreground">No variants — customers see base price and stock.</p>
+              )}
+              {variants.map((v, i) => (
+                <div key={i} className="grid grid-cols-[1fr_80px_72px_auto] items-center gap-2">
+                  <Input
+                    placeholder="Name (e.g. 500g)"
+                    value={v.name}
+                    onChange={(e) => updateVariantRow(i, 'name', e.target.value)}
+                    className="h-8 text-sm"
+                  />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="Price"
+                    value={v.price}
+                    onChange={(e) => updateVariantRow(i, 'price', e.target.value)}
+                    className="h-8 text-sm"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Stock"
+                    value={v.stock_qty}
+                    onChange={(e) => updateVariantRow(i, 'stock_qty', e.target.value)}
+                    className="h-8 text-sm"
+                  />
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      title={v.is_default ? 'Default variant' : 'Set as default'}
+                      onClick={() => updateVariantRow(i, 'is_default', !v.is_default)}
+                      className={`flex h-7 w-7 items-center justify-center rounded text-xs font-bold border transition-colors ${v.is_default ? 'bg-[#e23744] text-white border-[#e23744]' : 'border-border text-muted-foreground hover:border-[#e23744] hover:text-[#e23744]'}`}
+                    >
+                      D
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeVariantRow(i)}
+                      className="flex h-7 w-7 items-center justify-center rounded border border-border text-muted-foreground hover:border-destructive hover:text-destructive transition-colors"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {variants.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium text-[#e23744]">D</span> = default selection on product page.
+                  Name · Price · Stock per variant.
+                </p>
+              )}
+            </div>
+
             <Button type="submit" className="w-full">{editing ? 'Update' : 'Create'} Product</Button>
           </form>
         </DialogContent>
@@ -236,6 +376,7 @@ export default function AdminProducts() {
                 <TableHead>Category</TableHead>
                 <TableHead className="text-right">Price</TableHead>
                 <TableHead className="text-center">Stock</TableHead>
+                <TableHead>Variants</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -243,7 +384,7 @@ export default function AdminProducts() {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">No products found</TableCell>
+                  <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">No products found</TableCell>
                 </TableRow>
               ) : filtered.map((p) => (
                 <TableRow key={p.id} className={!p.is_active ? 'opacity-50' : ''}>
@@ -251,18 +392,23 @@ export default function AdminProducts() {
                     {p.image_url ? (
                       <img src={p.image_url} alt="" className="h-8 w-8 rounded object-cover" />
                     ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded bg-muted text-xs text-muted-foreground">
-                        —
-                      </div>
+                      <div className="flex h-8 w-8 items-center justify-center rounded bg-muted text-xs text-muted-foreground">—</div>
                     )}
                   </TableCell>
-                  <TableCell className="font-medium max-w-[200px] truncate">{p.name}</TableCell>
+                  <TableCell className="font-medium max-w-[180px] truncate">{p.name}</TableCell>
                   <TableCell className="text-muted-foreground">{p.category_name || '—'}</TableCell>
                   <TableCell className="text-right">₹{p.price}</TableCell>
                   <TableCell className="text-center">
                     <Badge variant={p.stock_qty === 0 ? 'destructive' : p.stock_qty <= 5 ? 'secondary' : 'outline'}>
                       {p.stock_qty}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {p.variants && p.variants.length > 0 ? (
+                      <Badge variant="secondary">{p.variants.length} variant{p.variants.length > 1 ? 's' : ''}</Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <button onClick={() => handleToggleActive(p)} className="cursor-pointer">
@@ -276,7 +422,20 @@ export default function AdminProducts() {
                       <Button variant="ghost" size="icon" aria-label={`Edit ${p.name}`} className="h-8 w-8" onClick={() => handleEdit(p)}>
                         <Edit size={14} />
                       </Button>
-                      <Button variant="ghost" size="icon" aria-label={`Deactivate ${p.name}`} className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => { if (confirm('Deactivate this product?')) { api.delete(`/admin/products/${p.id}`).then(() => { toast.success('Product deactivated'); fetchProducts(); }); }}}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Deactivate ${p.name}`}
+                        className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                        onClick={() => {
+                          if (confirm('Deactivate this product?')) {
+                            api.delete(`/admin/products/${p.id}`).then(() => {
+                              toast.success('Product deactivated');
+                              fetchProducts();
+                            });
+                          }
+                        }}
+                      >
                         <Trash2 size={14} />
                       </Button>
                     </div>

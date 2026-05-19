@@ -12,6 +12,11 @@ router.post('/products', ctrl.createProduct);
 router.put('/products/:id', ctrl.updateProduct);
 router.delete('/products/:id', ctrl.deleteProduct);
 
+router.get('/products/:id/variants', ctrl.getVariants);
+router.post('/products/:id/variants', ctrl.createVariant);
+router.put('/products/:id/variants/:variantId', ctrl.updateVariant);
+router.delete('/products/:id/variants/:variantId', ctrl.deleteVariant);
+
 router.get('/inventory', ctrl.getInventory);
 router.put('/inventory', ctrl.updateStock);
 

@@ -1,26 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
-  Home as HomeIcon, Search, Heart, ClipboardList, Tag, Settings,
+  Home as HomeIcon, Tag, Settings,
   ChevronLeft, ChevronRight, ShoppingCart, MapPin,
 } from 'lucide-react';
 import api from '../lib/api';
 import ProductCard from '../components/ProductCard';
-import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
 const NAV_ITEMS = [
-  { icon: HomeIcon, label: 'Home', to: '/', active: true },
-  { icon: Search, label: 'Search', to: '/' },
-  { icon: Heart, label: 'Favorites', to: '/' },
-  { icon: ClipboardList, label: 'Orders', to: '/orders' },
+  { icon: HomeIcon, label: 'Home', to: '/' },
   { icon: Tag, label: 'Offers', to: '/' },
-  { icon: Settings, label: 'Settings', to: '/' },
+  { icon: Settings, label: 'Settings', to: '/settings' },
 ];
 
 function HomeSidebar({ open, onToggle }) {
-  const { user } = useAuth();
-  const initials = user?.name?.slice(0, 2).toUpperCase() || 'U';
+  const { pathname } = useLocation();
 
   return (
     <div style={{
@@ -56,35 +51,29 @@ function HomeSidebar({ open, onToggle }) {
 
           <div style={{ width: 28, height: 1, background: 'var(--color-fm-line-soft)', margin: '2px 0' }} />
 
-          {NAV_ITEMS.map(({ icon: Icon, label, to, active }) => (
-            <Link
-              key={label}
-              to={to}
-              aria-label={label}
-              style={{
-                width: 40, height: 40,
-                borderRadius: 9,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: active ? 'var(--color-fm-green)' : 'transparent',
-                color: active ? '#fff' : 'var(--color-fm-ink2)',
-                transition: 'background 0.15s',
-              }}
-            >
-              <Icon size={16} />
-            </Link>
-          ))}
+          {NAV_ITEMS.map(({ icon: Icon, label, to }) => {
+            const active = pathname === to && to !== '/';
+            const homeActive = to === '/' && pathname === '/';
+            return (
+              <Link
+                key={label}
+                to={to}
+                aria-label={label}
+                style={{
+                  width: 40, height: 40,
+                  borderRadius: 9,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: (active || homeActive) ? 'var(--color-fm-green)' : 'transparent',
+                  color: (active || homeActive) ? '#fff' : 'var(--color-fm-ink2)',
+                  transition: 'background 0.15s',
+                }}
+              >
+                <Icon size={16} />
+              </Link>
+            );
+          })}
 
           <div style={{ flex: 1 }} />
-
-          <div style={{
-            width: 36, height: 36, borderRadius: 18,
-            background: 'var(--color-fm-accent-soft)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-heading)',
-            fontSize: 13, color: 'var(--color-fm-accent)', fontWeight: 700,
-          }}>
-            {initials}
-          </div>
         </>
       )}
 
@@ -112,13 +101,38 @@ function HomeSidebar({ open, onToggle }) {
   );
 }
 
+function BottomNav() {
+  const { pathname } = useLocation();
+
+  return (
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 flex h-14 items-stretch border-t bg-white"
+      style={{ borderColor: 'var(--color-fm-line-soft)' }}
+    >
+      {NAV_ITEMS.map(({ icon: Icon, label, to }) => {
+        const active = to === '/' ? pathname === '/' : pathname.startsWith(to);
+        return (
+          <Link
+            key={label}
+            to={to}
+            className="flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors"
+            style={{ color: active ? 'var(--color-fm-green)' : 'var(--color-fm-ink3)' }}
+          >
+            <Icon size={18} />
+            {label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 function HomeTopBar({ search, onSearch }) {
   const { totalItems } = useCart();
 
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
-      padding: '10px 24px',
+      padding: '10px 16px',
       borderBottom: '1.5px solid var(--color-fm-line-soft)',
       background: 'var(--color-fm-paper)',
       flexShrink: 0,
@@ -130,9 +144,10 @@ function HomeTopBar({ search, onSearch }) {
         borderRadius: 8,
         padding: '0 12px',
         height: 42,
-        flex: '0 1 460px',
+        flex: '1 1 0',
+        minWidth: 0,
+        maxWidth: 460,
       }}>
-        <Search size={14} color="var(--color-fm-ink3)" />
         <input
           value={search}
           onChange={e => onSearch(e.target.value)}
@@ -142,45 +157,40 @@ function HomeTopBar({ search, onSearch }) {
             fontFamily: 'var(--font-sans)',
             fontSize: 13, color: 'var(--color-fm-ink)',
             background: 'transparent',
+            minWidth: 0,
           }}
         />
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10, color: 'var(--color-fm-ink3)',
-          border: '1px solid var(--color-fm-line-soft)',
-          borderRadius: 4, padding: '2px 6px',
-        }}>⌘K</span>
+        <span
+          className="hidden sm:inline-flex"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 10, color: 'var(--color-fm-ink3)',
+            border: '1px solid var(--color-fm-line-soft)',
+            borderRadius: 4, padding: '2px 6px',
+            flexShrink: 0,
+          }}
+        >⌘K</span>
       </div>
 
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 6,
-        background: 'var(--color-fm-green-soft)',
-        border: '1.5px solid var(--color-fm-green-ink)',
-        borderRadius: 999,
-        padding: '5px 12px',
-        fontFamily: 'var(--font-sans)',
-        fontSize: 13, color: 'var(--color-fm-green-ink)', fontWeight: 500,
-        whiteSpace: 'nowrap',
-      }}>
+      <div
+        className="hidden sm:flex"
+        style={{
+          alignItems: 'center', gap: 6,
+          background: 'var(--color-fm-green-soft)',
+          border: '1.5px solid var(--color-fm-green-ink)',
+          borderRadius: 999,
+          padding: '5px 12px',
+          fontFamily: 'var(--font-sans)',
+          fontSize: 13, color: 'var(--color-fm-green-ink)', fontWeight: 500,
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}
+      >
         <MapPin size={12} />
         Delivering to you
       </div>
 
       <div style={{ flex: 1 }} />
-
-      <Link to="/orders" style={{
-        display: 'flex', alignItems: 'center', gap: 6,
-        border: '1.5px solid var(--color-fm-line-soft)',
-        borderRadius: 6,
-        padding: '7px 14px',
-        fontFamily: 'var(--font-sans)',
-        fontSize: 13, color: 'var(--color-fm-ink)',
-        background: 'transparent',
-        whiteSpace: 'nowrap',
-      }}>
-        <ClipboardList size={14} />
-        Orders
-      </Link>
 
       <Link to="/cart" style={{
         display: 'flex', alignItems: 'center', gap: 7,
@@ -191,9 +201,10 @@ function HomeTopBar({ search, onSearch }) {
         fontSize: 13, color: '#fff', fontWeight: 500,
         whiteSpace: 'nowrap',
         position: 'relative',
+        flexShrink: 0,
       }}>
         <ShoppingCart size={14} />
-        Cart
+        <span className="hidden sm:inline">Cart</span>
         {totalItems > 0 && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -243,13 +254,18 @@ export default function Home() {
       fontFamily: 'var(--font-sans)',
       color: 'var(--color-fm-ink)',
     }}>
-      <HomeSidebar open={sidebarOpen} onToggle={() => setSidebarOpen(o => !o)} />
+      {/* Sidebar — desktop only */}
+      <div className="hidden md:block">
+        <HomeSidebar open={sidebarOpen} onToggle={() => setSidebarOpen(o => !o)} />
+      </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <HomeTopBar search={search} onSearch={setSearch} />
 
-        <main style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 24 }}>
-
+        <main
+          className="pb-16 md:pb-0"
+          style={{ flex: 1, overflowY: 'auto', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 24 }}
+        >
           {/* Category pills */}
           <div>
             <div style={{
@@ -325,16 +341,18 @@ export default function Home() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-9">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             )}
           </div>
-
         </main>
       </div>
+
+      {/* Bottom nav — mobile only */}
+      <BottomNav />
     </div>
   );
 }

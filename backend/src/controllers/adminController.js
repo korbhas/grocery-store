@@ -848,3 +848,65 @@ exports.getDashboardPeriod = asyncHandler(async (req, res) => {
     low_stock_products: lowStockProducts,
   });
 });
+// --- Product Variants ---
+
+exports.getVariants = asyncHandler(async (req, res) => {
+  const variants = await db('product_variants')
+    .where({ product_id: req.params.id })
+    .orderBy('sort_order')
+    .orderBy('id');
+  res.json(variants);
+});
+
+exports.createVariant = asyncHandler(async (req, res) => {
+  const { name, price, stock_qty, is_default, sort_order } = req.body;
+  if (!name || !name.trim()) throw new AppError('Variant name is required', 400);
+  if (price === undefined || Number(price) < 0) throw new AppError('Price must be a non-negative number', 400);
+
+  if (is_default) {
+    await db('product_variants').where({ product_id: req.params.id }).update({ is_default: false });
+  }
+
+  const [variant] = await db('product_variants').insert({
+    product_id: req.params.id,
+    name: name.trim(),
+    price: Number(price),
+    stock_qty: stock_qty !== undefined ? Number(stock_qty) : 0,
+    is_default: is_default || false,
+    sort_order: sort_order || 0,
+  }).returning('*');
+
+  res.status(201).json(variant);
+});
+
+exports.updateVariant = asyncHandler(async (req, res) => {
+  const { name, price, stock_qty, is_default, sort_order } = req.body;
+  if (price !== undefined && Number(price) < 0) throw new AppError('Price must be a non-negative number', 400);
+
+  if (is_default) {
+    await db('product_variants').where({ product_id: req.params.id }).update({ is_default: false });
+  }
+
+  const updates = { updated_at: db.fn.now() };
+  if (name !== undefined) updates.name = name.trim();
+  if (price !== undefined) updates.price = Number(price);
+  if (stock_qty !== undefined) updates.stock_qty = Number(stock_qty);
+  if (is_default !== undefined) updates.is_default = is_default;
+  if (sort_order !== undefined) updates.sort_order = sort_order;
+
+  const [variant] = await db('product_variants')
+    .where({ id: req.params.variantId, product_id: req.params.id })
+    .update(updates)
+    .returning('*');
+
+  if (!variant) throw new AppError('Variant not found', 404);
+  res.json(variant);
+});
+
+exports.deleteVariant = asyncHandler(async (req, res) => {
+  const deleted = await db('product_variants')
+    .where({ id: req.params.variantId, product_id: req.params.id })
+    .del();
+  if (!deleted) throw new AppError('Variant not found', 404);
+  res.json({ message: 'Variant deleted' });
+});

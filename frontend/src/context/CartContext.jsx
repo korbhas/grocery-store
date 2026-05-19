@@ -31,34 +31,40 @@ export function CartProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const addToCart = async (product, quantity = 1) => {
-    // product should be the full product object { id, name, price, unit, image_url, stock_qty }
+  const addToCart = async (product, quantity = 1, variant = null) => {
     setItems((prev) => {
-      const existing = prev.find((item) => item.product_id === product.id);
+      const variantId = variant?.id || null;
+      const availableStock = variant ? variant.stock_qty : product.stock_qty;
+      const existing = prev.find((i) => i.product_id === product.id && i.variant_id === variantId);
+
       if (existing) {
         const newQty = existing.quantity + quantity;
-        if (newQty > product.stock_qty) {
+        if (newQty > availableStock) {
           toast.error('Not enough stock');
           return prev;
         }
-        return prev.map((item) =>
-          item.product_id === product.id ? { ...item, quantity: newQty } : item
+        return prev.map((i) =>
+          i.product_id === product.id && i.variant_id === variantId ? { ...i, quantity: newQty } : i
         );
       }
-      if (quantity > product.stock_qty) {
+
+      if (quantity > availableStock) {
         toast.error('Not enough stock');
         return prev;
       }
+
       return [
         ...prev,
         {
-          id: Date.now(), // local ID
+          id: Date.now(),
           product_id: product.id,
+          variant_id: variantId,
+          variant_name: variant?.name || null,
           name: product.name,
-          price: parseFloat(product.price),
+          price: variant ? parseFloat(variant.price) : parseFloat(product.price),
           unit: product.unit,
           image_url: product.image_url,
-          stock_qty: product.stock_qty,
+          stock_qty: availableStock,
           quantity,
         },
       ];

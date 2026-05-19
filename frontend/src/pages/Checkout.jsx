@@ -89,7 +89,7 @@ export default function Checkout() {
       const orderPayload = {
         delivery_address: addressMode === 'map' ? locationData.address : manualAddress.trim(),
         delivery_pincode: addressMode === 'map' ? locationData.pincode : undefined,
-        items: items.map((item) => ({ product_id: item.product_id, quantity: item.quantity })),
+        items: items.map((item) => ({ product_id: item.product_id, variant_id: item.variant_id || undefined, quantity: item.quantity })),
       };
       if (couponData) {
         orderPayload.coupon_id = couponData.coupon.id;

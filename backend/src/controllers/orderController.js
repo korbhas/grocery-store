@@ -77,13 +77,37 @@ exports.createOrder = asyncHandler(async (req, res) => {
       productMap[p.id] = p;
     }
 
+    const variantIds = items.filter((i) => i.variant_id).map((i) => i.variant_id);
+    const variantMap = {};
+    if (variantIds.length > 0) {
+      const variants = await trx('product_variants').whereIn('id', variantIds).forUpdate();
+      for (const v of variants) variantMap[v.id] = v;
+    }
+
     const cartItems = items.map((item) => {
       const product = productMap[item.product_id];
       if (!product) throw new AppError(`Product ${item.product_id} not found`, 400);
       if (!product.is_active) throw new AppError(`${product.name} is no longer available`, 400);
+
+      if (item.variant_id) {
+        const variant = variantMap[item.variant_id];
+        if (!variant || variant.product_id !== product.id) throw new AppError(`Invalid variant for ${product.name}`, 400);
+        if (variant.stock_qty < item.quantity) throw new AppError(`Insufficient stock for ${product.name} (${variant.name})`, 400);
+        return {
+          product_id: product.id,
+          variant_id: variant.id,
+          variant_name: variant.name,
+          quantity: item.quantity,
+          price: parseFloat(variant.price),
+          name: product.name,
+        };
+      }
+
       if (product.stock_qty < item.quantity) throw new AppError(`Insufficient stock for ${product.name}`, 400);
       return {
         product_id: product.id,
+        variant_id: null,
+        variant_name: null,
         quantity: item.quantity,
         price: parseFloat(product.price),
         name: product.name,
@@ -146,6 +170,8 @@ exports.createOrder = asyncHandler(async (req, res) => {
     const orderItems = cartItems.map((item) => ({
       order_id: order.id,
       product_id: item.product_id,
+      variant_id: item.variant_id || null,
+      variant_name: item.variant_name || null,
       quantity: item.quantity,
       unit_price: item.price,
     }));
@@ -210,7 +236,11 @@ exports.verifyPayment = asyncHandler(async (req, res) => {
 
     const items = await trx('order_items').where({ order_id: order.id });
     for (const item of items) {
-      await trx('products').where({ id: item.product_id }).decrement('stock_qty', item.quantity);
+      if (item.variant_id) {
+        await trx('product_variants').where({ id: item.variant_id }).decrement('stock_qty', item.quantity);
+      } else {
+        await trx('products').where({ id: item.product_id }).decrement('stock_qty', item.quantity);
+      }
     }
 
     if (order.user_id) {
