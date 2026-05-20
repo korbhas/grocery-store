@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -29,51 +25,131 @@ export default function Login() {
   };
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md items-center px-4 py-8">
-      <Card className="w-full">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-[#e23744] text-xl font-bold text-white">
+    <div style={{
+      flex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'var(--color-fm-paper)',
+      padding: '24px 16px',
+      fontFamily: 'var(--font-sans)',
+    }}>
+      <div style={{ width: '100%', maxWidth: 360 }}>
+
+        {/* Logo */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: 16,
+            background: 'var(--color-fm-accent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-heading)',
+            fontSize: 22, fontWeight: 800, color: '#fff',
+            letterSpacing: -0.5,
+          }}>
             FM
           </div>
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <p className="text-sm text-muted-foreground">Sign in to your FreshMart account</p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full bg-[#e23744] hover:bg-[#c52d39]" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
-            <Link to="/register" className="font-semibold text-[#e23744] hover:underline">
-              Create one
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Headings */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{
+            fontSize: 13, color: 'var(--color-fm-ink3)', fontWeight: 500, marginBottom: 6,
+          }}>
+            Your groceries, delivered in minutes
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-heading)',
+            fontSize: 22, fontWeight: 700, color: 'var(--color-fm-ink)',
+          }}>
+            Log in or Sign up
+          </div>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <input
+            type="email"
+            placeholder="Enter email address"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            style={{
+              width: '100%', height: 48, borderRadius: 8,
+              border: '1.5px solid var(--color-fm-line-soft)',
+              padding: '0 14px', fontSize: 14,
+              fontFamily: 'var(--font-sans)',
+              color: 'var(--color-fm-ink)',
+              background: '#fff', outline: 'none',
+              boxSizing: 'border-box',
+              transition: 'border-color 0.15s',
+            }}
+            onFocus={e => e.target.style.borderColor = 'var(--color-fm-green)'}
+            onBlur={e => e.target.style.borderColor = 'var(--color-fm-line-soft)'}
+          />
+
+          <input
+            type="password"
+            placeholder="Enter password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            style={{
+              width: '100%', height: 48, borderRadius: 8,
+              border: '1.5px solid var(--color-fm-line-soft)',
+              padding: '0 14px', fontSize: 14,
+              fontFamily: 'var(--font-sans)',
+              color: 'var(--color-fm-ink)',
+              background: '#fff', outline: 'none',
+              boxSizing: 'border-box',
+              transition: 'border-color 0.15s',
+            }}
+            onFocus={e => e.target.style.borderColor = 'var(--color-fm-green)'}
+            onBlur={e => e.target.style.borderColor = 'var(--color-fm-line-soft)'}
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%', height: 48, borderRadius: 8,
+              background: loading ? 'var(--color-fm-ink3)' : 'var(--color-fm-green)',
+              color: '#fff', border: 'none',
+              fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 700,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'background 0.15s',
+              marginTop: 4,
+            }}
+          >
+            {loading ? 'Logging in…' : 'Continue'}
+          </button>
+        </form>
+
+        {/* Register link */}
+        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'var(--color-fm-ink2)' }}>
+          New to FreshMart?{' '}
+          <Link to="/register" style={{
+            color: 'var(--color-fm-green)', fontWeight: 600, textDecoration: 'none',
+          }}>
+            Create account
+          </Link>
+        </div>
+
+        {/* Terms */}
+        <div style={{
+          textAlign: 'center', marginTop: 24,
+          fontSize: 11, color: 'var(--color-fm-ink3)', lineHeight: 1.6,
+        }}>
+          By continuing, you agree to our{' '}
+          <a href="/terms" style={{ color: 'var(--color-fm-ink2)', textDecoration: 'underline' }}>
+            Terms of service
+          </a>
+          {' '}&amp;{' '}
+          <a href="/privacy" style={{ color: 'var(--color-fm-ink2)', textDecoration: 'underline' }}>
+            Privacy policy
+          </a>
+        </div>
+
+      </div>
     </div>
   );
 }

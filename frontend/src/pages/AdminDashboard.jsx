@@ -104,7 +104,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard icon={IndianRupee} label="Revenue" value={`₹${stats.total_revenue.toLocaleString('en-IN', { minimumFractionDigits: 0 })}`} change={stats.revenue_change} periodLabel={period} />
         <StatCard icon={ShoppingCart} label="Orders" value={stats.total_orders.toLocaleString()} change={stats.orders_change} subtitle={`${stats.pending_orders} pending`} periodLabel={period} />
         <StatCard icon={Package} label="Products" value={stats.total_products.toLocaleString()} />
@@ -225,19 +225,19 @@ function StatCard({ icon: Icon, label, value, change, subtitle, periodLabel }) {
   const periodText = periodLabel === 'today' ? 'vs yesterday' : periodLabel === 'week' ? 'vs last week' : 'vs prev month';
   return (
     <Card>
-      <CardContent className="p-4">
+      <CardContent className="p-3">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs font-medium text-muted-foreground">{label}</p>
-            <p className="mt-1 text-2xl font-bold">{value}</p>
-            {subtitle && <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>}
+            <p className="text-[11px] font-medium text-muted-foreground">{label}</p>
+            <p className="mt-0.5 text-xl font-bold">{value}</p>
+            {subtitle && <p className="mt-0.5 text-[11px] text-muted-foreground">{subtitle}</p>}
           </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[#e23744]/10">
-            <Icon size={18} className="text-[#e23744]" />
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#e23744]/10">
+            <Icon size={14} className="text-[#e23744]" />
           </div>
         </div>
         {change !== null && change !== undefined && (
-          <p className={`mt-2 text-xs font-medium ${parseFloat(change) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+          <p className={`mt-1.5 text-[11px] font-medium ${parseFloat(change) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
             {parseFloat(change) >= 0 ? '+' : ''}{change}% {periodText}
           </p>
         )}

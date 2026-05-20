@@ -10,6 +10,7 @@ import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import OrderTracking from './pages/OrderTracking';
 import Orders from './pages/Orders';
+import Products from './pages/Products';
 import Settings from './pages/Settings';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
@@ -36,10 +37,11 @@ function RouterLayout({ user }) {
 
   return (
     <>
-      {!isHome && !isAdmin && <Navbar userRole={user?.role} />}
-      <main className={isHome ? 'contents' : isAdmin ? 'contents' : 'min-h-[calc(100dvh-3.5rem)] flex flex-col flex-1'}>
+      {!isAdmin && <Navbar userRole={user?.role} />}
+      <main className={isAdmin ? 'contents' : 'flex flex-col flex-1'}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
